@@ -53,6 +53,23 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
    * @return best move found at this node
    */
   private MOVE Minimax(int depth) {
+
+    // Terminating condition
+    
+    //generate available moves
+    Move maxminMoves = this.board.generateMoves();
+    //assign values to moves
+    this.board.moveOrdering(maxminMoves, depth);
+    //sort by value
+    Util.QuickSort(maxminMoves);
+
+    if(this.board.getCurrentPlayer() == 1){
+      
+    }
+    else{}
+    //Assign value to availble moves
+
+
     return null;
   }
 }
