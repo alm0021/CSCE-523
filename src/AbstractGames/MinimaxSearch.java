@@ -54,22 +54,75 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
    */
   private MOVE Minimax(int depth) {
 
-    // Terminating condition
-    
     //generate available moves
     Move maxminMoves = this.board.generateMoves();
-    //assign values to moves
-    this.board.moveOrdering(maxminMoves, depth);
-    //sort by value
-    Util.QuickSort(maxminMoves);
 
-    if(this.board.getCurrentPlayer() == 1){
-      
+    // Terminating condition
+    if(this.board.endGame() == 1){ 
+        maxminMoves.value += (10-depth);
+        @SuppressWarnings("unchecked") MOVE m = (MOVE)maxminMoves;
+        return m;
     }
-    else{}
-    //Assign value to availble moves
+    else if(this.board.endGame() == 0){
+      maxminMoves.value += (-10-depth);
+      @SuppressWarnings("unchecked") MOVE m = (MOVE)maxminMoves;
+       return m;
+    }
 
+    @SuppressWarnings("unchecked") MOVE bestMove = (MOVE)this.board.newMove();
+    
 
+    //assign values to moves
+    //this.board.moveOrdering(maxminMoves, depth);
+    //sort by value
+    //Util.QuickSort(maxminMoves);
+
+    //If player is BLACK, select MAX value Move
+    if(this.board.getCurrentPlayer() == 1){
+      bestMove.value = Double.MIN_VALUE;
+      while(maxminMoves.next != null){
+        this.board.makeMove(maxminMoves);
+        totalNodesSearched++;
+        MOVE value = Minimax(depth + 1);
+        bestMove = maxMove(bestMove, value);
+        this.board.reverseMove(maxminMoves);
+        return bestMove;
+      }
+    }
+    //If player is WHITE, select MIN value Move
+    else{
+      bestMove.value = Double.MAX_VALUE;
+      while(maxminMoves.next != null){
+        this.board.makeMove(maxminMoves);
+        totalNodesSearched++;
+        MOVE value = Minimax(depth + 1);
+        bestMove = minMove(bestMove, value);
+        this.board.reverseMove(maxminMoves);
+        return bestMove;
+      }
+    }
     return null;
+}
+
+  /**
+   * maxMove
+   *
+   * @param m1 Move to compare
+   * @param m2 Move to compare
+   * @return Move with higher value
+   */
+  public MOVE maxMove(MOVE m1, MOVE m2){
+    return m1.value >= m2.value ? m1 : m2;
+  }
+
+    /**
+   * minMove
+   *
+   * @param m1 Move to compare
+   * @param m2 Move to compare
+   * @return Move with lower value
+   */
+  public MOVE minMove(MOVE m1, MOVE m2){
+    return m1.value <= m2.value ? m1 : m2;
   }
 }
