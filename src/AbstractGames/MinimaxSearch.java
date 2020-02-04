@@ -93,6 +93,7 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
         MOVE value = Minimax(depth + 1);
         bestMove = maxMove(bestMove, value);
         this.board.reverseMove(maxminMoves);
+        maxminMoves = maxminMoves.next;
         return bestMove;
       }
     }
@@ -105,6 +106,7 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
         MOVE value = Minimax(depth + 1);
         bestMove = minMove(bestMove, value);
         this.board.reverseMove(maxminMoves);
+        maxminMoves = maxminMoves.next;
         return bestMove;
       }
     }
