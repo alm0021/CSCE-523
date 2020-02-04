@@ -60,16 +60,23 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
     // Terminating condition
     if(this.board.endGame() == 1){ 
         maxminMoves.value += (10-depth);
+        totalLeafNodes++;
         @SuppressWarnings("unchecked") MOVE m = (MOVE)maxminMoves;
         return m;
     }
     else if(this.board.endGame() == 0){
-      maxminMoves.value += (-10-depth);
+      maxminMoves.value += (-10);
+      totalLeafNodes++;
       @SuppressWarnings("unchecked") MOVE m = (MOVE)maxminMoves;
        return m;
     }
+    else if (this.board.endGame() == BOARD.GAME_DRAW){
+      totalLeafNodes++;
+      @SuppressWarnings("unchecked") MOVE m = (MOVE)maxminMoves;
+      return m;
+    }
 
-    @SuppressWarnings("unchecked") MOVE bestMove = (MOVE)this.board.newMove();
+    @SuppressWarnings("unchecked") MOVE bestMove = (MOVE)maxminMoves;
     
 
     //assign values to moves
@@ -80,7 +87,7 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
     //If player is BLACK, select MAX value Move
     if(this.board.getCurrentPlayer() == 1){
       bestMove.value = Double.MIN_VALUE;
-      while(maxminMoves.next != null){
+      while(maxminMoves != null){
         this.board.makeMove(maxminMoves);
         totalNodesSearched++;
         MOVE value = Minimax(depth + 1);
@@ -92,7 +99,7 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
     //If player is WHITE, select MIN value Move
     else{
       bestMove.value = Double.MAX_VALUE;
-      while(maxminMoves.next != null){
+      while(maxminMoves != null){
         this.board.makeMove(maxminMoves);
         totalNodesSearched++;
         MOVE value = Minimax(depth + 1);
@@ -112,6 +119,8 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
    * @return Move with higher value
    */
   public MOVE maxMove(MOVE m1, MOVE m2){
+    if(m2 == null){return m1;}
+    else if(m1 == null){return m2;}
     return m1.value >= m2.value ? m1 : m2;
   }
 
@@ -123,6 +132,8 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
    * @return Move with lower value
    */
   public MOVE minMove(MOVE m1, MOVE m2){
+    if(m2 == null){return m1;}
+    else if(m1 == null){return m2;}
     return m1.value <= m2.value ? m1 : m2;
   }
 }
