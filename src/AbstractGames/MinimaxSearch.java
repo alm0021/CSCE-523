@@ -51,38 +51,31 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
    * @param depth Depth to search to
    * @return best move found at this node
    */
+  @SuppressWarnings("unchecked")
   private MOVE Minimax(int depth) {
 
     // generate available moves
     Move maxminMoves = this.board.generateMoves();
 
-    // Terminating condition
+    // Make move (change board state)
+    this.board.makeMove(maxminMoves);
+
+    // Terminating conditions
     if (this.board.endGame() == 1) {
       maxminMoves.value += (10 - depth);
       totalLeafNodes++;
-      @SuppressWarnings("unchecked")
-      MOVE m = (MOVE) maxminMoves;
-      return m;
+      return (MOVE) maxminMoves;
     } else if (this.board.endGame() == 0) {
       maxminMoves.value += (-10);
       totalLeafNodes++;
-      @SuppressWarnings("unchecked")
-      MOVE m = (MOVE) maxminMoves;
-      return m;
+      return (MOVE) maxminMoves;
     } else if (this.board.endGame() == BOARD.GAME_DRAW) {
       totalLeafNodes++;
-      @SuppressWarnings("unchecked")
-      MOVE m = (MOVE) maxminMoves;
-      return m;
+      return (MOVE) maxminMoves;
     }
+    this.board.reverseMove(maxminMoves);
 
-    @SuppressWarnings("unchecked")
     MOVE bestMove = (MOVE) maxminMoves;
-
-    // assign values to moves
-    // this.board.moveOrdering(maxminMoves, depth);
-    // sort by value
-    // Util.QuickSort(maxminMoves);
 
     // If player is BLACK, select MAX value Move
     if (this.board.getCurrentPlayer() == 1) {
