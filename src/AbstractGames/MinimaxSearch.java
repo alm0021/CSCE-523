@@ -1,9 +1,15 @@
+/**
+ * Used the following sources:
+ * https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/
+ */
+
 package AbstractGames;
 
 public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Search<BOARD, MOVE> {
   BOARD board;
   int totalNodesSearched;
   int totalLeafNodes;
+  int maxDepth;
 
   @Override
   public MOVE findBestMove(BOARD board, int depth) {
@@ -46,7 +52,7 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
   }
 
   /**
-   * TODO Write Minimax here!
+   * Minimax
    *
    * @param depth Depth to search to
    * @return best move found at this node
@@ -54,57 +60,111 @@ public class MinimaxSearch<BOARD extends Board, MOVE extends Move> implements Se
   @SuppressWarnings("unchecked")
   private MOVE Minimax(int depth) {
 
+    Move theBestMove = null;
+    double theBestVal = 1000;
+    this.maxDepth = depth;
+
     // generate available moves
-    Move maxminMoves = this.board.generateMoves();
+    Move movesList = this.board.generateMoves();
 
-    // Make move (change board state)
-    this.board.makeMove(maxminMoves);
-
-    // Terminating conditions
-    if (this.board.endGame() == 1) {
-      maxminMoves.value += (10 - depth);
-      totalLeafNodes++;
-      return (MOVE) maxminMoves;
-    } else if (this.board.endGame() == 0) {
-      maxminMoves.value += (-10);
-      totalLeafNodes++;
-      return (MOVE) maxminMoves;
-    } else if (this.board.endGame() == BOARD.GAME_DRAW) {
-      totalLeafNodes++;
-      return (MOVE) maxminMoves;
+    while (movesList != null) {
+      // Make move
+      this.board.makeMove(movesList);
+      // Call new minimax method
+      double theMoveVal = selectMinimax(depth);
+      // Undo move
+      this.board.reverseMove(movesList);
+      // Update theBestMove if value of current
+      if (theMoveVal < theBestVal) {
+        theBestMove = movesList;
+        theBestVal = theMoveVal;
+      }
+      movesList = movesList.next;
     }
-    this.board.reverseMove(maxminMoves);
+    return (MOVE) theBestMove;
+  }
 
-    MOVE bestMove = (MOVE) maxminMoves;
+  /**
+   * gameOver
+   *
+   * @return score of board if terminal state
+   */
+  public int gameOver() {
+    // Terminating conditions
+    if (this.board.endGame() == 1) { // BLACK WINNER
+      return 10;
+    } else if (this.board.endGame() == 0) { // WHITE WINNER
+      return -10;
+    } else { // GAME DRAW or CONTINUE
+      return 0;
+    }
+  }
+
+  /**
+   * selectMinimax
+   *
+   * @param depth depth of search
+   * @return value of best move
+   */
+  public double selectMinimax(int depth) {
+    int score = gameOver();
+
+    // If BLACK wins, return score
+    if (score == 10) {
+      totalLeafNodes++;
+      return score - depth;
+    }
+    // If WHITE wins, return score
+    if (score == -10) {
+      totalLeafNodes++;
+      return score - depth;
+    }
+    // If DRAW, return 0
+    if (this.board.endGame() == BOARD.GAME_DRAW) {
+      totalLeafNodes++;
+      return 0;
+    }
+
+    //Depth check
+    if(depth > this.maxDepth){
+      return 0;
+    }
 
     // If player is BLACK, select MAX value Move
     if (this.board.getCurrentPlayer() == 1) {
-      bestMove.value = Double.MIN_VALUE;
-      while (maxminMoves != null) {
-        this.board.makeMove(maxminMoves);
+      Double best = -1000.0;
+      Move maxMoves = this.board.generateMoves();
+      // Traverse all available moves
+      while (maxMoves != null) {
+        // Make the move
+        this.board.makeMove(maxMoves);
         totalNodesSearched++;
-        MOVE value = Minimax(depth + 1);
-        bestMove = maxMove(bestMove, value);
-        this.board.reverseMove(maxminMoves);
-        maxminMoves = maxminMoves.next;
+        // Use Minimax to get max value
+        best = Math.max(best, selectMinimax(depth + 1));
+        // reverse the move
+        this.board.reverseMove(maxMoves);
+        maxMoves = maxMoves.next;
       }
-      return bestMove;
+      return best;
 
     }
     // If player is WHITE, select MIN value Move
     else {
-      bestMove.value = Double.MAX_VALUE;
-      while (maxminMoves != null) {
-        this.board.makeMove(maxminMoves);
+      Double best = 1000.0;
+      Move minMoves = this.board.generateMoves();
+      // Traverse all available moves
+      while (minMoves != null) {
+        // Make the move
+        this.board.makeMove(minMoves);
         totalNodesSearched++;
-        MOVE value = Minimax(depth + 1);
-        bestMove = minMove(bestMove, value);
-        this.board.reverseMove(maxminMoves);
-        maxminMoves = maxminMoves.next;
+        // Use Minimax to get max value
+        best = Math.min(best, selectMinimax(depth + 1));
+        // reverse the move
+        this.board.reverseMove(minMoves);
+        minMoves = minMoves.next;
       }
-      return bestMove;
+      return best;
     }
-    // return null;
   }
 
   /**
