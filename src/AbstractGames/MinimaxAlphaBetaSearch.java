@@ -69,7 +69,7 @@ public class MinimaxAlphaBetaSearch<BOARD extends Board, MOVE extends Move> impl
     this.maxDepth = depth;
 
     // generate available moves
-    Move movesList = Util.QuickSort(this.board.generateMoves());
+    Move movesList = this.board.moveOrdering(this.board.generateMoves(), depth);
 
     while (movesList != null) {
       // Make move
@@ -137,7 +137,7 @@ public class MinimaxAlphaBetaSearch<BOARD extends Board, MOVE extends Move> impl
     // If player is BLACK, select MAX value Move
     if (this.board.getCurrentPlayer() == 1) {
       Double best = MIN;
-      Move maxMoves = Util.QuickSort(this.board.generateMoves());
+      Move maxMoves = this.board.moveOrdering(this.board.generateMoves(), depth);
       // Traverse all available moves
       while (maxMoves != null) {
         // Make the move
@@ -160,7 +160,7 @@ public class MinimaxAlphaBetaSearch<BOARD extends Board, MOVE extends Move> impl
     // If player is WHITE, select MIN value Move
     else {
       Double best = MAX;
-      Move minMoves = Util.QuickSort(this.board.generateMoves());
+      Move minMoves = this.board.moveOrdering(this.board.generateMoves(), depth);
       // Traverse all available moves
       while (minMoves != null) {
         // Make the move
